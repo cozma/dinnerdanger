@@ -2,7 +2,7 @@
   <body>
     <section class="hero is-info is-fullheight">
       <div class="hero-head">
-        <nav class="navbar is-fixed-top is-light">
+        <nav class="navbar is-fixed-top is-warning">
           <div class="container">
             <div class="navbar-brand">
               <a
@@ -37,7 +37,7 @@
       <div class="hero-body">
         <div class="container">
           <p>welcome to</p>
-          <h1 class="is-size-1 title">{{ msg }}</h1>
+          <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
           <div class="container is-fluid">
             <div class="field">
               <div class="control is-focused">
@@ -56,8 +56,8 @@
     <footer class="footer">
       <div class="content has-text-centered">
         <p>
-          <strong>pilldex</strong> by
-          <a href="https://github.com/cozma">Dag Yeshiwas</a>
+          <strong>developed</strong> by
+          <a href="https://github.com/cozma" style="color:#FFD83D">Dag Yeshiwas</a>
         </p>
       </div>
     </footer>
