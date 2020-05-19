@@ -48,6 +48,14 @@
                   placeholder="type or paste your location id here"
                 />
               </div>
+              <br>
+              <div class="has-text-centered">
+                <input
+                  class="button is-centered is-warning is-medium is-outlined"
+                  type="submit"
+                  value="search"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -56,8 +64,10 @@
     <footer class="footer">
       <div class="content has-text-centered">
         <p>
-          <strong>developed</strong> by
-          <a href="https://github.com/cozma" style="color:#FFD83D">Dag Yeshiwas</a>
+          developed by
+          <strong><a href="https://github.com/cozma" style="color:#FFD83D"
+            >Dag</a
+          ></strong>
         </p>
       </div>
     </footer>
@@ -70,9 +80,7 @@ export default {
   props: {
     msg: String,
   },
-  methods: {
-    
-  }
+  methods: {},
 };
 </script>
 
