@@ -42,15 +42,17 @@
             <div class="field">
               <div class="control is-focused">
                 <input
+                  v-model="locationId"
                   style="text-align:center"
                   class="input is-large is-rounded"
                   type="text"
                   placeholder="type or paste your location id here"
                 />
               </div>
-              <br>
+              <br />
               <div class="has-text-centered">
                 <input
+                  v-on:click="search"
                   class="button is-centered is-warning is-medium is-outlined"
                   type="submit"
                   value="search"
@@ -65,9 +67,11 @@
       <div class="content has-text-centered">
         <p>
           developed by
-          <strong><a href="https://github.com/cozma" style="color:#FFD83D"
-            >Dag</a
-          ></strong>
+          <strong
+            ><a href="https://github.com/cozma" style="color:#FFD83D"
+              >Dag</a
+            ></strong
+          >
         </p>
       </div>
     </footer>
@@ -79,8 +83,29 @@ export default {
   name: "PillDex",
   props: {
     msg: String,
+    locationId: String,
   },
-  methods: {},
+  methods: {
+    search() {
+      var $ = require("jquery");
+      var settings = {
+        url: "https://connect.squareupsandbox.com/v2/orders/search",
+        method: "POST",
+        timeout: 0,
+        headers: {
+          Authorization:
+            "Bearer EAAAEMSvmR6PgNiIZ0jE0zF610RpfEN3llo4GMwIj3A_HV6HXcf48qqTHvWI2yym",
+          "Content-Type": ["application/json", "text/plain"],
+          "access-control-allow-origin": "*",
+        },
+        data: '{\n    "location_ids": [\n      "62VA3EYMYDVA4"\n    ]\n  }',
+      };
+
+      $.ajax(settings).done(function(response) {
+        console.log(response);
+      });
+    },
+  },
 };
 </script>
 
