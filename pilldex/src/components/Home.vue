@@ -81,29 +81,66 @@
 <script>
 export default {
   name: "PillDex",
+  orders: [],
+  products: "",
   props: {
     msg: String,
     locationId: String,
   },
   methods: {
     search() {
-      var $ = require("jquery");
-      var settings = {
-        url: "https://connect.squareupsandbox.com/v2/orders/search",
+      var self = this;
+      var request = require("request");
+      var options = {
         method: "POST",
-        timeout: 0,
+        url: "https://connect.squareupsandbox.com/v2/orders/search",
         headers: {
           Authorization:
             "Bearer EAAAEMSvmR6PgNiIZ0jE0zF610RpfEN3llo4GMwIj3A_HV6HXcf48qqTHvWI2yym",
-          "Content-Type": ["application/json", "text/plain"],
-          "access-control-allow-origin": "*",
+          "Content-Type": "application/json",
         },
-        data: '{\n    "location_ids": [\n      "62VA3EYMYDVA4"\n    ]\n  }',
+        body:
+          '{\n    "location_ids": [\n      "' +
+          this.locationId +
+          '"\n    ]\n  }',
       };
-
-      $.ajax(settings).done(function(response) {
-        console.log(response);
+      request(options, function(error, response) {
+        if (error) throw new Error(error);
+        // console.log(response.body);
+        self.orders = response.body;
+        self.getProducts();
       });
+    },
+    getProducts: function() {
+      var self = this;
+      self.products = ""
+      if (this.orders) {
+        console.log("Calling Drugs API");
+        var orderList = JSON.parse(this.orders);
+        for (var i = 0; i < orderList.orders.length; i++) {
+          for (var j = 0; j < orderList.orders[i].line_items.length; j++) {
+            var unirest = require("unirest");
+            unirest(
+              "GET",
+              "https://rxnav.nlm.nih.gov/REST/rxcui?name=" +
+                orderList.orders[i].line_items[j].name
+            ).end(function(res) {
+              if (res.error) throw new Error(res.error);
+              var parser, xmlDoc;
+              parser = new DOMParser();
+              xmlDoc = parser.parseFromString(res.body, "text/xml");
+              console.log('printing type...: ' + typeof self.products)
+              self.products += xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
+                  .nodeValue + "+"
+              // self.products.push(
+              //   xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
+              //     .nodeValue
+              // );
+              console.log("product id added: " + self.products);
+            });
+          }
+        }
+      }
     },
   },
 };
