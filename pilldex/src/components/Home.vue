@@ -5,6 +5,14 @@
         <nav class="navbar is-fixed-top is-warning">
           <div class="container">
             <div class="navbar-brand">
+              <a class="navbar-item" href="https://bulma.io">
+                <img
+                  src="../assets/pilldex.png"
+                  alt="pilldex logo"
+                  width="90"
+                  height="50"
+                />
+              </a>
               <a
                 role="button"
                 class="navbar-burger"
@@ -35,7 +43,7 @@
       </div>
 
       <div class="hero-body">
-        <div class="container">
+        <div class="container" v-if="this.welcome">
           <p>welcome to</p>
           <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
           <div class="container is-fluid">
@@ -83,12 +91,19 @@ export default {
   name: "PillDex",
   orders: [],
   products: "",
+  drugResponse: "",
+  data() {
+    return {
+      welcome: true,
+    };
+  },
   props: {
     msg: String,
     locationId: String,
   },
   methods: {
     search() {
+      this.welcome = false;
       var self = this;
       var request = require("request");
       var options = {
@@ -113,7 +128,7 @@ export default {
     },
     getProducts: function() {
       var self = this;
-      self.products = ""
+      self.products = "";
       if (this.orders) {
         console.log("Calling Drugs API");
         var orderList = JSON.parse(this.orders);
@@ -129,9 +144,10 @@ export default {
               var parser, xmlDoc;
               parser = new DOMParser();
               xmlDoc = parser.parseFromString(res.body, "text/xml");
-              console.log('printing type...: ' + typeof self.products)
-              self.products += xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
-                  .nodeValue + "+"
+              console.log("printing type...: " + typeof self.products);
+              self.products +=
+                xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
+                  .nodeValue + "+";
               // self.products.push(
               //   xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
               //     .nodeValue
@@ -140,8 +156,10 @@ export default {
             });
           }
         }
+        self.getInteractons();
       }
     },
+    getInteractons: function() {},
   },
 };
 </script>
