@@ -1,6 +1,6 @@
 <template>
   <body>
-    <section class="hero is-info is-fullheight">
+    <section class="hero is-info is-fullheight has-bg-img">
       <div class="hero-head">
         <nav class="navbar is-fixed-top is-warning">
           <div class="container">
@@ -200,14 +200,15 @@ export default {
       var unirest = require("unirest");
       unirest(
         "GET",
-        "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=" + self.products
+        "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=" +
+          self.products
       )
         .headers({
           Cookie: "BIGipServer~ghr-mor~mor-https-ipv4=188026498.47873.0000",
         })
         .end(function(res) {
           if (res.error) throw new Error(res.error);
-          console.log('interactions: ' + res.raw_body);
+          console.log("interactions: " + res.raw_body);
         });
     },
   },
@@ -243,5 +244,14 @@ li {
 }
 a {
   color: rgb(232, 209, 37);
+}
+.has-bg-img {
+    background-image: url("../assets/bg.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: rgb(0, 120, 172);
+    opacity: 0.7;
 }
 </style>
