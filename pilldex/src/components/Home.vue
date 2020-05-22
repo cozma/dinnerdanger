@@ -5,13 +5,13 @@
         <nav class="navbar is-fixed-top is-warning">
           <div class="container">
             <div class="navbar-brand">
-              <a class="navbar-item" href="/">
-                <img
-                  src="../assets/pilldex.png"
-                  alt="pilldex logo"
-                  width="90"
-                  height="50"
-                />
+              <a
+                id="refresh"
+                class="navbar-item"
+                v-on:click="welcome = true"
+                v-show="!this.welcome"
+              >
+                Search Another Store
               </a>
               <a
                 role="button"
@@ -33,7 +33,7 @@
                 <a class="navbar-item">
                   Examples
                 </a>
-                <a class="navbar-item">
+                <a class="navbar-item" href="https://github.com/cozma/pilldex">
                   Documentation
                 </a>
               </div>
@@ -43,30 +43,66 @@
       </div>
 
       <div class="hero-body">
-        <div class="container" v-if="this.welcome">
-          <p>welcome to</p>
-          <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
-          <div class="container is-fluid">
-            <div class="field">
-              <div class="control is-focused">
-                <input
-                  v-model="locationId"
-                  style="text-align:center"
-                  class="input is-large is-rounded"
-                  type="text"
-                  placeholder="type or paste your location id here"
-                />
-              </div>
-              <br />
-              <div class="has-text-centered">
-                <input
-                  v-on:click="search"
-                  class="button is-centered is-warning is-medium is-outlined"
-                  type="submit"
-                  value="search"
-                />
+        <!-- WELCOME -->
+        <div class="container">
+          <div v-if="this.welcome">
+            <p>welcome to</p>
+            <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
+            <div class="container is-fluid">
+              <div class="field">
+                <div class="control is-focused">
+                  <input
+                    v-model="locationId"
+                    style="text-align:center"
+                    class="input is-large is-rounded"
+                    type="text"
+                    placeholder="type or paste your location id here"
+                  />
+                </div>
+                <br />
+                <div class="has-text-centered">
+                  <input
+                    id="search"
+                    v-on:click="search"
+                    class="button is-centered is-warning is-medium is-outlined"
+                    type="submit"
+                    value="search"
+                  />
+                </div>
               </div>
             </div>
+          </div>
+          <div v-if="!this.welcome">
+            <!-- RESULTS -->
+            <p>Here are your results:</p>
+            <br />
+            <article class="panel is-warning has-background-white	">
+              <p class="panel-heading">
+                Recent Order Warnings
+              </p>
+              <p class="panel-tabs">
+                <a class="is-active">Interactions</a>
+                <a>Drug Ingredients</a>
+              </p>
+              <div class="panel-block">
+                <p class="control has-icons-left">
+                  <input
+                    class="input is-info"
+                    type="text"
+                    placeholder="Search"
+                  />
+                  <span class="icon is-left">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                  </span>
+                </p>
+              </div>
+              <a class="panel-block is-active">
+                <span class="panel-icon">
+                  <i class="fas fa-book" aria-hidden="true"></i>
+                </span>
+                bulma
+              </a>
+            </article>
           </div>
         </div>
       </div>
@@ -90,6 +126,7 @@
 export default {
   name: "PillDex",
   orders: [],
+  warningList: [],
   products: "",
   drugResponse: "",
   data() {
@@ -148,7 +185,7 @@ export default {
               self.products +=
                 xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
                   .nodeValue + "+";
-              // self.products.push(
+              // self.productList.push(
               //   xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
               //     .nodeValue
               // );
@@ -159,13 +196,40 @@ export default {
         self.getInteractons();
       }
     },
-    getInteractons: function() {},
+    getInteractons: function() {
+      var unirest = require("unirest");
+      unirest(
+        "GET",
+        "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=" + self.products
+      )
+        .headers({
+          Cookie: "BIGipServer~ghr-mor~mor-https-ipv4=188026498.47873.0000",
+        })
+        .end(function(res) {
+          if (res.error) throw new Error(res.error);
+          console.log('interactions: ' + res.raw_body);
+        });
+    },
   },
 };
+
+// var $ = require("jquery");
+// $(document).ready(function() {
+//   $("search").click(function() {
+//     $("#results").fadeIn("slow");
+//   });
+//   $("refresh").click(function() {
+//     $("#results").fadeOut("slow");
+//   });
+// });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.results {
+  transition: 0.5s ease;
+  opacity: 0;
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -178,6 +242,6 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #42b983;
+  color: rgb(232, 209, 37);
 }
 </style>
