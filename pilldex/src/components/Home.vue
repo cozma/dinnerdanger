@@ -160,69 +160,57 @@ export default {
         if (error) throw new Error(error);
         // console.log(response.body);
         self.orders = response.body;
+        setTimeout("", 100);
         self.getProducts();
       });
     },
     getProducts: function() {
       var self = this;
-      self.products = "";
       if (this.orders) {
         console.log("Calling Drugs API");
         var orderList = JSON.parse(this.orders);
         for (var i = 0; i < orderList.orders.length; i++) {
           for (var j = 0; j < orderList.orders[i].line_items.length; j++) {
-            var unirest = require("unirest");
-            unirest(
-              "GET",
-              "https://rxnav.nlm.nih.gov/REST/rxcui?name=" +
-                orderList.orders[i].line_items[j].name
-            ).end(function(res) {
-              if (res.error) throw new Error(res.error);
+            self.products = "";
+            var request = require("request");
+            var options = {
+              method: "GET",
+              url:
+                "https://rxnav.nlm.nih.gov/REST/rxcui?name=" +
+                orderList.orders[i].line_items[j].name,
+            };
+            request(options, function(error, response) {
+              if (error) throw new Error(error);
               var parser, xmlDoc;
               parser = new DOMParser();
-              xmlDoc = parser.parseFromString(res.body, "text/xml");
-              console.log("printing type...: " + typeof self.products);
+              xmlDoc = parser.parseFromString(response.body, "text/xml");
               self.products +=
                 xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
                   .nodeValue + "+";
-              // self.productList.push(
-              //   xmlDoc.getElementsByTagName("rxnormId")[0].childNodes[0]
-              //     .nodeValue
-              // );
-              console.log("product id added: " + self.products);
             });
           }
+          self.getInteractons();
         }
-        self.getInteractons();
       }
     },
-    getInteractons: function() {
-      var unirest = require("unirest");
-      unirest(
-        "GET",
-        "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=" +
-          self.products
-      )
-        .headers({
-          Cookie: "BIGipServer~ghr-mor~mor-https-ipv4=188026498.47873.0000",
-        })
-        .end(function(res) {
-          if (res.error) throw new Error(res.error);
-          console.log("interactions: " + res.raw_body);
-        });
+    getInteractons() {
+      var self = this;
+      var request = require("request");
+      console.log("rxIDs: " + self.products);
+
+      var options = {
+        method: "GET",
+        url:
+          "https://rxnav.nlm.nih.gov/REST/interaction/list.json?rxcuis=" +
+          self.products,
+      };
+      request(options, function(error, response) {
+        if (error) throw new Error(error);
+        console.log("interactions: " + response.body);
+      });
     },
   },
 };
-
-// var $ = require("jquery");
-// $(document).ready(function() {
-//   $("search").click(function() {
-//     $("#results").fadeIn("slow");
-//   });
-//   $("refresh").click(function() {
-//     $("#results").fadeOut("slow");
-//   });
-// });
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -246,12 +234,12 @@ a {
   color: rgb(232, 209, 37);
 }
 .has-bg-img {
-    background-image: url("../assets/bg.jpg");
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-color: rgb(0, 120, 172);
-    opacity: 0.7;
+  background-image: url("../assets/bg.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-color: rgb(0, 120, 172);
+  opacity: 0.7;
 }
 </style>
