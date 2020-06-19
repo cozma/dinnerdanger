@@ -140,7 +140,7 @@ export default {
         method: "POST",
         url:
           'https://api.fda.gov/food/enforcement.json?search=reason_for_recall:"' +
-          ingredient +
+          self.ingredient +
           '"&limit=100',
         headers: {
           "Content-Type": "application/json",
