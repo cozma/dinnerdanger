@@ -48,28 +48,48 @@
           <div v-if="this.welcome">
             <p>welcome to</p>
             <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
-            <div class="container is-fluid">
-              <div class="field">
-                <div class="control is-focused">
-                  <input
-                    v-model="locationId"
-                    style="text-align:center"
-                    class="input is-large is-rounded"
-                    type="text"
-                    placeholder="type or paste your location id here"
-                  />
-                </div>
-                <br />
-                <div class="has-text-centered">
-                  <input
-                    id="search"
-                    v-on:click="search"
-                    class="button is-centered is-warning is-medium is-outlined"
-                    type="submit"
-                    value="search"
-                  />
+            <br />
+          </div>
+          <div class="columns" v-if="this.welcome">
+            <div class="column">
+              <div class="container is-fluid">
+                <div class="field">
+                  <div class="control is-focused">
+                    <input
+                      v-model="ingredient"
+                      style="text-align:center"
+                      class="input is-large is-rounded"
+                      type="text"
+                      placeholder="enter an ingredient here"
+                    />
+                  </div>
+                  <br />
+                  <div class="has-text-centered">
+                    <input
+                      id="add"
+                      v-on:click="add"
+                      class="button is-centered is-warning is-medium is-outlined"
+                      type="submit"
+                      value="add to list"
+                    />
+                  </div>
+                  <br />
                 </div>
               </div>
+            </div>
+            <div class="column">
+              Second column
+            </div>
+          </div>
+          <div v-if="this.welcome">
+            <div class="has-text-centered">
+              <input
+                id="search"
+                v-on:click="search"
+                class="button is-centered is-warning is-medium is-outlined"
+                type="submit"
+                value="search dinner warnings"
+              />
             </div>
           </div>
           <div v-if="!this.welcome">
@@ -125,6 +145,8 @@ export default {
     return {
       welcome: true,
       ingredient: "",
+      ingredients: [],
+      nextIngredient: 1
     };
   },
   props: {
@@ -153,6 +175,13 @@ export default {
         setTimeout("", 100);
         self.getProducts();
       });
+    },
+    add() {
+      this.todos.push({
+        id: this.nextTodoId++,
+        title: this.newTodoText,
+      });
+      this.newTodoText = "";
     },
   },
 };
