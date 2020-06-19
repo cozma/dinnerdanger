@@ -30,7 +30,10 @@
                 <a class="navbar-item is-active">
                   Home
                 </a>
-                <a class="navbar-item" href="https://github.com/cozma/dinnerdanger">
+                <a
+                  class="navbar-item"
+                  href="https://github.com/cozma/dinnerdanger"
+                >
                   Documentation
                 </a>
               </div>
@@ -116,14 +119,12 @@
 
 <script>
 export default {
-  name: "PillDex",
-  orders: [],
-  warningList: [],
-  products: "",
-  drugResponse: "",
+  name: "dinnerdanger",
+  dinner: [],
   data() {
     return {
       welcome: true,
+      ingredient: "",
     };
   },
   props: {
@@ -137,10 +138,13 @@ export default {
       var request = require("request");
       var options = {
         method: "POST",
-        url: 'https://api.fda.gov/food/enforcement.json?search=reason_for_recall:"' + ingredient + '"&limit=100',
+        url:
+          'https://api.fda.gov/food/enforcement.json?search=reason_for_recall:"' +
+          ingredient +
+          '"&limit=100',
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
@@ -149,7 +153,7 @@ export default {
         setTimeout("", 100);
         self.getProducts();
       });
-    }
+    },
   },
 };
 </script>
