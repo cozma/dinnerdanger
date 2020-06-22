@@ -61,6 +61,7 @@
                       class="input is-large is-rounded"
                       type="text"
                       placeholder="enter an ingredient here"
+                      v-on:keyup.enter="add"
                     />
                   </div>
                   <br />
@@ -78,7 +79,9 @@
               </div>
             </div>
             <div class="column">
+              <li>Choose Dinner date: <input type="date" v-model="date" /></li>
               <div id="ingredients">
+                <br>
                 <ul>
                   <li v-for="item in ingredients" v-bind:key="item">
                     <figure class="image is-128x128">
@@ -156,6 +159,7 @@ export default {
   dinner: [],
   data() {
     return {
+      date: new Date(),
       welcome: true,
       ingredient: "",
       ingredients: [],
@@ -193,7 +197,8 @@ export default {
       console.log("adding ingredient: " + this.ingredient);
       this.ingredients.push({
         id: this.nextIngredient++,
-        title: this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
+        title:
+          this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
       });
       console.log("ingredients: " + this.ingredients[0].title);
       this.ingredient = "";
@@ -229,6 +234,6 @@ a {
   background-attachment: fixed;
   background-size: cover;
   background-color: rgb(0, 120, 172);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 </style>
