@@ -78,15 +78,18 @@
               </div>
             </div>
             <div class="column">
-              <div id="todo-list-example">
+              <div id="ingredients">
                 <ul>
-                  <li
-                    is="todo-item"
-                    v-for="(todo, index) in todos"
-                    v-bind:key="todo.id"
-                    v-bind:title="todo.title"
-                    v-on:remove="todos.splice(index, 1)"
-                  ></li>
+                  <li v-for="item in ingredients" v-bind:key="item">
+                    <figure class="image is-128x128">
+                      <img
+                        class="is-rounded"
+                        src="https://bulma.io/images/placeholders/128x128.png"
+                      />
+                    </figure>
+                    <a href="#">{{ item.title }}</a
+                    ><br />
+                  </li>
                 </ul>
               </div>
             </div>
@@ -187,11 +190,13 @@ export default {
       });
     },
     add() {
-      this.todos.push({
-        id: this.nextTodoId++,
-        title: this.newTodoText,
+      console.log("adding ingredient: " + this.ingredient);
+      this.ingredients.push({
+        id: this.nextIngredient++,
+        title: this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
       });
-      this.newTodoText = "";
+      console.log("ingredients: " + this.ingredients[0].title);
+      this.ingredient = "";
     },
   },
 };
