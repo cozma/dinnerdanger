@@ -78,7 +78,17 @@
               </div>
             </div>
             <div class="column">
-              Second column
+              <div id="todo-list-example">
+                <ul>
+                  <li
+                    is="todo-item"
+                    v-for="(todo, index) in todos"
+                    v-bind:key="todo.id"
+                    v-bind:title="todo.title"
+                    v-on:remove="todos.splice(index, 1)"
+                  ></li>
+                </ul>
+              </div>
             </div>
           </div>
           <div v-if="this.welcome">
@@ -146,7 +156,7 @@ export default {
       welcome: true,
       ingredient: "",
       ingredients: [],
-      nextIngredient: 1
+      nextIngredient: 1,
     };
   },
   props: {
