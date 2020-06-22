@@ -81,7 +81,7 @@
             <div class="column">
               <li>Choose Dinner date: <input type="date" v-model="date" /></li>
               <div id="ingredients">
-                <br>
+                <br />
                 <ul>
                   <li v-for="item in ingredients" v-bind:key="item">
                     <figure class="image is-128x128">
@@ -90,18 +90,27 @@
                         src="https://bulma.io/images/placeholders/128x128.png"
                       />
                     </figure>
-                    <a href="#">{{ item.title }}</a
+                    <a href="#"
+                      ><b>{{ item.title }}</b></a
                     ><br />
                   </li>
                 </ul>
+                <br>
+                <input
+                  id="clear"
+                  v-on:click="clear"
+                  class="button is-centered is-warning is-medium is-outlined"
+                  type="submit"
+                  value="clear list"
+                />
               </div>
             </div>
           </div>
           <div v-if="this.welcome">
             <div class="has-text-centered">
               <input
-                id="search"
-                v-on:click="search"
+                id="list"
+                v-on:click="list"
                 class="button is-centered is-warning is-medium is-outlined"
                 type="submit"
                 value="search dinner warnings"
@@ -129,9 +138,15 @@
                 </p>
               </div>
               <a class="panel-block is-active">
-                <span class="panel-icon">
-                  <i class="fas fa-book" aria-hidden="true"></i>
-                </span>
+                <li v-for="warning in warnings" v-bind:key="warning">
+                  <a href="#"
+                    ><b>{{
+                      warning.results[0].product_description
+                        .split("Ingredients")[0]
+                        .split("INGREDIENTS")[0]
+                    }}</b></a
+                  >
+                </li>
               </a>
             </article>
           </div>
@@ -159,11 +174,12 @@ export default {
   dinner: [],
   data() {
     return {
-      date: new Date(),
+      date: "",
       welcome: true,
       ingredient: "",
       ingredients: [],
       nextIngredient: 1,
+      warnings: [],
     };
   },
   props: {
@@ -171,27 +187,41 @@ export default {
     locationId: String,
   },
   methods: {
-    search() {
+    clear() {
+      this.ingredients = [];
+    },
+    list() {
       this.welcome = false;
+      console.log("WARNINGS LIST: " + this.warnings);
+    },
+    search() {
       var self = this;
       var request = require("request");
+      var rangeDate = this.findRange(this.date);
       var options = {
-        method: "POST",
+        method: "GET",
         url:
-          'https://api.fda.gov/food/enforcement.json?search=reason_for_recall:"' +
+          "https://api.fda.gov/food/enforcement.json?search=report_date:[" +
+          rangeDate +
+          "+TO+" +
+          this.date.replace(/[^a-z0-9]/gi, "") +
+          ']+product_description:"' +
           self.ingredient +
-          '"&limit=100',
+          '"&limit=100&sort=report_date:desc',
         headers: {
           "Content-Type": "application/json",
         },
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
-        // console.log(response.body);
-        self.orders = response.body;
-        setTimeout("", 100);
-        self.getProducts();
+        self.warnings.push(JSON.parse(response.body));
       });
+    },
+    findRange(date) {
+      var dateArray = date.split("-");
+      dateArray[0] = parseInt(dateArray[0]) - 5;
+      console.log("RANGE DATE: " + dateArray.join());
+      return dateArray.join().replace(/[^a-z0-9]/gi, "");
     },
     add() {
       console.log("adding ingredient: " + this.ingredient);
@@ -201,6 +231,7 @@ export default {
           this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
       });
       console.log("ingredients: " + this.ingredients[0].title);
+      this.search();
       this.ingredient = "";
     },
   },
@@ -234,6 +265,6 @@ a {
   background-attachment: fixed;
   background-size: cover;
   background-color: rgb(0, 120, 172);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 </style>
