@@ -8,7 +8,7 @@
               <a
                 id="refresh"
                 class="navbar-item"
-                v-on:click="welcome = true"
+                v-on:click="clear"
                 v-show="!this.welcome"
               >
                 Search Another Dinner
@@ -50,10 +50,15 @@
             <h1 class="is-size-1 title" style="color:#FFD83D">{{ msg }}</h1>
             <br />
           </div>
-          <div class="columns" v-if="this.welcome">
+          <div class="columns">
             <div class="column">
-              <div class="container is-fluid">
+              <div class="container is-fluid" v-if="this.welcome">
+                <li>
+                  <b>Choose Dinner date: </b
+                  ><input type="date" v-model="date" />
+                </li>
                 <div class="field">
+                  <br />
                   <div class="control is-focused">
                     <input
                       v-model="ingredient"
@@ -77,10 +82,42 @@
                   <br />
                 </div>
               </div>
+              <div v-if="!this.welcome">
+                <!-- RESULTS -->
+                <p>Here are your results:</p>
+                <br />
+                <article class="panel is-small is-warning has-background-white	">
+                  <p class="panel-heading">
+                    Recent FDA Warnings
+                  </p>
+                  <div class="panel-block">
+                    <p class="control has-icons-left">
+                      <input
+                        class="input is-info"
+                        type="text"
+                        placeholder="Search"
+                      />
+                      <span class="icon is-left">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                      </span>
+                    </p>
+                  </div>
+                  <li v-for="warning in warnings" v-bind:key="warning">
+                    <div class="panel-block">
+                      <a class="" href="#">
+                        <b>{{
+                          warning.results[0].product_description
+                            .split("Ingredients")[0]
+                            .split("INGREDIENTS")[0] + "\n"
+                        }}</b></a
+                      >
+                    </div>
+                  </li>
+                </article>
+              </div>
             </div>
             <div class="column">
-              <li>Choose Dinner date: <input type="date" v-model="date" /></li>
-              <div id="ingredients">
+              <div id="ingredients" v-if="this.welcome">
                 <br />
                 <ul>
                   <li v-for="item in ingredients" v-bind:key="item">
@@ -95,8 +132,9 @@
                     ><br />
                   </li>
                 </ul>
-                <br>
+                <br />
                 <input
+                  v-if="this.ingredients != ''"
                   id="clear"
                   v-on:click="clear"
                   class="button is-centered is-warning is-medium is-outlined"
@@ -116,39 +154,6 @@
                 value="search dinner warnings"
               />
             </div>
-          </div>
-          <div v-if="!this.welcome">
-            <!-- RESULTS -->
-            <p>Here are your results:</p>
-            <br />
-            <article class="panel is-warning has-background-white	">
-              <p class="panel-heading">
-                Recent FDA Warnings
-              </p>
-              <div class="panel-block">
-                <p class="control has-icons-left">
-                  <input
-                    class="input is-info"
-                    type="text"
-                    placeholder="Search"
-                  />
-                  <span class="icon is-left">
-                    <i class="fas fa-search" aria-hidden="true"></i>
-                  </span>
-                </p>
-              </div>
-              <a class="panel-block is-active">
-                <li v-for="warning in warnings" v-bind:key="warning">
-                  <a href="#"
-                    ><b>{{
-                      warning.results[0].product_description
-                        .split("Ingredients")[0]
-                        .split("INGREDIENTS")[0]
-                    }}</b></a
-                  >
-                </li>
-              </a>
-            </article>
           </div>
         </div>
       </div>
@@ -189,6 +194,8 @@ export default {
   methods: {
     clear() {
       this.ingredients = [];
+      this.warnings = [];
+      this.welcome = true;
     },
     list() {
       this.welcome = false;
@@ -224,15 +231,19 @@ export default {
       return dateArray.join().replace(/[^a-z0-9]/gi, "");
     },
     add() {
-      console.log("adding ingredient: " + this.ingredient);
-      this.ingredients.push({
-        id: this.nextIngredient++,
-        title:
-          this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
-      });
-      console.log("ingredients: " + this.ingredients[0].title);
-      this.search();
-      this.ingredient = "";
+      if (this.date == "") {
+        alert("Please select a dinner date before adding orders.");
+      } else {
+        console.log("adding ingredient: " + this.ingredient);
+        this.ingredients.push({
+          id: this.nextIngredient++,
+          title:
+            this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
+        });
+        console.log("ingredients: " + this.ingredients[0].title);
+        this.search();
+        this.ingredient = "";
+      }
     },
   },
 };
