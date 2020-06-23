@@ -265,15 +265,16 @@ export default {
       var user = prompt("Please enter your username:", "");
       var pass = prompt("Please enter your password:", "");
       if (user == null || user == "" || pass == null || pass == "") {
-        console.log("User cancelled the prompt.")
+        console.log("User cancelled the prompt.");
       } else {
         var AWS = require("aws-sdk");
-        AWS.config.update({ region: "us-east-1" });
+
+
         var ddb = new AWS.DynamoDB();
 
         var params = {
           TableName: "dinners",
-          Item: {
+          Key: {
             userId: { S: user },
           },
         };
