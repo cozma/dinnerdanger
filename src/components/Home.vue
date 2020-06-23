@@ -93,21 +93,9 @@
                   <p class="panel-heading">
                     Recent FDA Warnings
                   </p>
-                  <div class="panel-block">
-                    <p class="control has-icons-left">
-                      <input
-                        class="input is-info"
-                        type="text"
-                        placeholder="Search"
-                      />
-                      <span class="icon is-left">
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                      </span>
-                    </p>
-                  </div>
                   <li v-for="warning in warnings" v-bind:key="warning">
                     <div class="panel-block">
-                      <a class="" href="#">
+                      <a class="" v-on:click="setCurrentWarning(warning)">
                         <b>{{
                           warning.results[0].product_description
                             .split("oz")[0]
@@ -146,22 +134,13 @@
               <div class="box" v-if="!this.welcome">
                 <article class="media">
                   <div class="media-left">
-                    <figure class="image is-64x64">
-                      <img
-                        src="https://bulma.io/images/placeholders/128x128.png"
-                        alt="Image"
-                      />
-                    </figure>
                   </div>
                   <div class="media-content">
                     <div class="content">
                       <p>
-                        <strong>John Smith</strong> <small>@johnsmith</small>
-                        <small>31m</small>
+                        <strong>Details:</strong>
                         <br />
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Aenean efficitur sit amet massa fringilla egestas.
-                        Nullam condimentum luctus turpis.
+                        {{ curWarningBody }}
                       </p>
                     </div>
                   </div>
@@ -210,6 +189,7 @@ export default {
       ingredients: [],
       nextIngredient: 1,
       warnings: [],
+      curWarningBody: "",
     };
   },
   props: {
@@ -331,6 +311,9 @@ export default {
         });
       }
     },
+    setCurrentWarning(warning) {
+      this.curWarningBody = warning.results
+    }
   },
 };
 </script>
