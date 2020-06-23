@@ -107,6 +107,7 @@
                       <a class="" href="#">
                         <b>{{
                           warning.results[0].product_description
+                            .split("oz")[0]
                             .split("Ingredients")[0]
                             .split("INGREDIENTS")[0] + "\n"
                         }}</b></a
@@ -122,10 +123,7 @@
                 <ul>
                   <li v-for="item in ingredients" v-bind:key="item">
                     <figure class="image is-128x128">
-                      <img
-                        class="is-rounded"
-                        src="https://bulma.io/images/placeholders/128x128.png"
-                      />
+                      <img class="is-rounded" v-bind:src="item.img" />
                     </figure>
                     <a href="#"
                       ><b>{{ item.title }}</b></a
@@ -230,20 +228,55 @@ export default {
       console.log("RANGE DATE: " + dateArray.join());
       return dateArray.join().replace(/[^a-z0-9]/gi, "");
     },
+    // add() {
+    //   if (this.date == "") {
+    //     alert("Please select a dinner date before adding orders.");
+    //   } else {
+    //     console.log("adding ingredient: " + this.ingredient);
+    //     this.ingredients.push({
+    //       id: this.nextIngredient++,
+    //       title:
+    //         this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
+    //       img: this.imageLink(this.ingredient),
+    //     });
+    //     console.log("ingredients: " + this.ingredients[0].title);
+    //     this.search();
+    //     this.ingredient = "";
+    //   }
+    // },
     add() {
-      if (this.date == "") {
-        alert("Please select a dinner date before adding orders.");
-      } else {
-        console.log("adding ingredient: " + this.ingredient);
-        this.ingredients.push({
-          id: this.nextIngredient++,
-          title:
-            this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
-        });
-        console.log("ingredients: " + this.ingredients[0].title);
-        this.search();
-        this.ingredient = "";
-      }
+      var self = this
+      var request = require("request");
+      var options = {
+        method: "GET",
+        url:
+          "https://api.tenor.com/v1/search?q=" +
+          self.ingredient +
+          "&key=LIVDSRZULELA&limit=1&contentfilter=high&media_filter=minimal&ar_range=standard",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      request(options, function(error, response) {
+        if (error) throw new Error(error);
+        console.log("URL: " + JSON.parse(response.body).results[0].url);
+
+        if (self.date == "") {
+          alert("Please select a dinner date before adding orders.");
+        } else {
+          console.log("adding ingredient: " + self.ingredient);
+          self.ingredients.push({
+            id: self.nextIngredient++,
+            title:
+              self.ingredient.charAt(0).toUpperCase() +
+              self.ingredient.slice(1),
+            img: JSON.parse(response.body).results[0].media[0].gif.url,
+          });
+          console.log("ingredients: " + self.ingredients[0].title);
+          self.search();
+          self.ingredient = "";
+        }
+      });
     },
   },
 };
