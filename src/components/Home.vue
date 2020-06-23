@@ -143,6 +143,30 @@
                   value="clear list"
                 />
               </div>
+              <div class="box" v-if="!this.welcome">
+                <article class="media">
+                  <div class="media-left">
+                    <figure class="image is-64x64">
+                      <img
+                        src="https://bulma.io/images/placeholders/128x128.png"
+                        alt="Image"
+                      />
+                    </figure>
+                  </div>
+                  <div class="media-content">
+                    <div class="content">
+                      <p>
+                        <strong>John Smith</strong> <small>@johnsmith</small>
+                        <small>31m</small>
+                        <br />
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Aenean efficitur sit amet massa fringilla egestas.
+                        Nullam condimentum luctus turpis.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              </div>
             </div>
           </div>
           <div v-if="this.welcome">
@@ -246,9 +270,11 @@ export default {
           alert("Please select a dinner date before adding orders.");
         } else {
           var image = "";
-          if (response.body.results) {
+          console.log("JSON BODY RESULTS: " + response.body)
+          if (JSON.parse(response.body).results) {
             image = JSON.parse(response.body).results[0].media[0].gif.url;
           }
+          console.log(image);
           self.ingredients.push({
             id: self.nextIngredient++,
             title:
@@ -262,6 +288,7 @@ export default {
       });
     },
     login() {
+      var self = this;
       var user = prompt("Please enter your username:", "");
       var pass = prompt("Please enter your password:", "");
       if (user == null || user == "" || pass == null || pass == "") {
@@ -269,6 +296,10 @@ export default {
       } else {
         var AWS = require("aws-sdk");
 
+        AWS.config = new AWS.Config();
+        AWS.config.accessKeyId = "AKIAVAMWIXVL7ESOVHPL";
+        AWS.config.secretAccessKey = "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";
+        AWS.config.region = "us-east-1";
 
         var ddb = new AWS.DynamoDB();
 
@@ -284,10 +315,16 @@ export default {
             console.log("Error", err);
             alert("Error logging in.");
           } else {
-            console.log("Success", data);
-            if (data.pass == pass) {
-              this.ingredients = data.ingredients;
-              this.date = data.date;
+            var parseData = AWS.DynamoDB.Converter.unmarshall(data.Item);
+            console.log("Success", parseData);
+
+            if (parseData.pass == pass) {
+              for (var i = 0; i < parseData.ingredients.length; i++) {
+                self.ingredient = parseData.ingredients[i];
+                self.add();
+              }
+              self.ingredients = parseData.ingredients;
+              self.date = parseData.date;
             } else {
               alert("The password entered is incorrect. Pleast try again.");
             }
