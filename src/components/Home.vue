@@ -242,12 +242,16 @@ export default {
         if (self.date == "") {
           alert("Please select a dinner date before adding orders.");
         } else {
+          var image = ""
+          if (response.body.results) {
+            image = JSON.parse(response.body).results[0].media[0].gif.url
+          }
           self.ingredients.push({
             id: self.nextIngredient++,
             title:
               self.ingredient.charAt(0).toUpperCase() +
               self.ingredient.slice(1),
-            img: JSON.parse(response.body).results[0].media[0].gif.url,
+            img: image,
           });
           self.search();
           self.ingredient = "";
