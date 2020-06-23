@@ -297,8 +297,7 @@ export default {
         var AWS = require("aws-sdk");
 
         AWS.config = new AWS.Config();
-        AWS.config.accessKeyId = "AKIAVAMWIXVL7ESOVHPL";
-        AWS.config.secretAccessKey = "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";
+
         AWS.config.region = "us-east-1";
 
         var ddb = new AWS.DynamoDB();
