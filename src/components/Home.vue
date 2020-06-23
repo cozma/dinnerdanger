@@ -30,6 +30,9 @@
                 <a class="navbar-item is-active">
                   Home
                 </a>
+                <a class="navbar-item is-active" v-on:click="login">
+                  Login
+                </a>
                 <a
                   class="navbar-item"
                   href="https://github.com/cozma/dinnerdanger"
