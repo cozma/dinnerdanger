@@ -234,7 +234,7 @@ export default {
         url:
           "https://api.tenor.com/v1/search?q=" +
           self.ingredient +
-          "&key=LIVDSRZULELA&limit=1&contentfilter=high&media_filter=minimal&ar_range=standard"
+          "&key=LIVDSRZULELA&limit=1&contentfilter=high&media_filter=minimal&ar_range=standard",
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
@@ -242,9 +242,9 @@ export default {
         if (self.date == "") {
           alert("Please select a dinner date before adding orders.");
         } else {
-          var image = ""
+          var image = "";
           if (response.body.results) {
-            image = JSON.parse(response.body).results[0].media[0].gif.url
+            image = JSON.parse(response.body).results[0].media[0].gif.url;
           }
           self.ingredients.push({
             id: self.nextIngredient++,
@@ -255,6 +255,32 @@ export default {
           });
           self.search();
           self.ingredient = "";
+        }
+      });
+    },
+    login(user, pass) {
+      var AWS = require("aws-sdk");
+      AWS.config.update({ region: "us-east-1" });
+      var ddb = new AWS.DynamoDB();
+
+      var params = {
+        TableName: "dinners",
+        Item: {
+          userId: { N: user },
+        },
+      };
+
+      ddb.getItem(params, function(err, data) {
+        if (err) {
+          console.log("Error", err);
+        } else {
+          console.log("Success", data);
+          if (data.pass == pass) {
+            this.ingredients = data.ingredients;
+            this.date = data.date;
+          } else {
+            alert("The password entered is incorrect. Pleast try again.");
+          }
         }
       });
     },
