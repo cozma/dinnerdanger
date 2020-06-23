@@ -30,7 +30,7 @@
                 <a class="navbar-item is-active">
                   Home
                 </a>
-                <a class="navbar-item is-active" v-on:click="login">
+                <a class="navbar-item" v-on:click="login">
                   Login
                 </a>
                 <a
@@ -261,31 +261,38 @@ export default {
         }
       });
     },
-    login(user, pass) {
-      var AWS = require("aws-sdk");
-      AWS.config.update({ region: "us-east-1" });
-      var ddb = new AWS.DynamoDB();
+    login() {
+      var user = prompt("Please enter your username:", "");
+      var pass = prompt("Please enter your password:", "");
+      if (user == null || user == "" || pass == null || pass == "") {
+        console.log("User cancelled the prompt.")
+      } else {
+        var AWS = require("aws-sdk");
+        AWS.config.update({ region: "us-east-1" });
+        var ddb = new AWS.DynamoDB();
 
-      var params = {
-        TableName: "dinners",
-        Item: {
-          userId: { N: user },
-        },
-      };
+        var params = {
+          TableName: "dinners",
+          Item: {
+            userId: { S: user },
+          },
+        };
 
-      ddb.getItem(params, function(err, data) {
-        if (err) {
-          console.log("Error", err);
-        } else {
-          console.log("Success", data);
-          if (data.pass == pass) {
-            this.ingredients = data.ingredients;
-            this.date = data.date;
+        ddb.getItem(params, function(err, data) {
+          if (err) {
+            console.log("Error", err);
+            alert("Error logging in.");
           } else {
-            alert("The password entered is incorrect. Pleast try again.");
+            console.log("Success", data);
+            if (data.pass == pass) {
+              this.ingredients = data.ingredients;
+              this.date = data.date;
+            } else {
+              alert("The password entered is incorrect. Pleast try again.");
+            }
           }
-        }
-      });
+        });
+      }
     },
   },
 };
