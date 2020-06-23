@@ -99,6 +99,7 @@
                         <b>{{
                           warning.results[0].product_description
                             .split("oz")[0]
+                            .split("OZ")[0]
                             .split("Ingredients")[0]
                             .split("INGREDIENTS")[0] + "\n"
                         }}</b></a
@@ -131,10 +132,11 @@
                   value="clear list"
                 />
               </div>
+              <br />
+              <br />
               <div class="box" v-if="!this.welcome">
                 <article class="media">
-                  <div class="media-left">
-                  </div>
+                  <div class="media-left"></div>
                   <div class="media-content">
                     <div class="content">
                       <p>
@@ -225,7 +227,12 @@ export default {
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
-        self.warnings.push(JSON.parse(response.body));
+        if (response.statusCode == 404) {
+          self.ingredient = "";
+          alert("Ingredient not found. Please try again.");
+        } else {
+          self.warnings.push(JSON.parse(response.body));
+        }
       });
     },
     findRange(date) {
@@ -245,25 +252,25 @@ export default {
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
-
+        console.log("STATUS CODE: " + response.statusCode);
         if (self.date == "") {
           alert("Please select a dinner date before adding orders.");
         } else {
           var image = "";
-          console.log("JSON BODY RESULTS: " + response.body)
-          if (JSON.parse(response.body).results) {
+          if (JSON.parse(response.body).results[0]) {
             image = JSON.parse(response.body).results[0].media[0].gif.url;
           }
-          console.log(image);
-          self.ingredients.push({
-            id: self.nextIngredient++,
-            title:
-              self.ingredient.charAt(0).toUpperCase() +
-              self.ingredient.slice(1),
-            img: image,
-          });
-          self.search();
-          self.ingredient = "";
+          if (self.ingredient != "") {
+            self.ingredients.push({
+              id: self.nextIngredient++,
+              title:
+                self.ingredient.charAt(0).toUpperCase() +
+                self.ingredient.slice(1),
+              img: image,
+            });
+            self.search();
+            self.ingredient = "";
+          }
         }
       });
     },
@@ -312,8 +319,12 @@ export default {
       }
     },
     setCurrentWarning(warning) {
-      this.curWarningBody = warning.results
-    }
+      this.curWarningBody =
+        warning.results[0].reason_for_recall +
+        "\t\n" +
+        "Report Date: " +
+        warning.results[0].report_date;
+    },
   },
 };
 </script>
