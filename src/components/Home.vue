@@ -197,7 +197,6 @@ export default {
     },
     list() {
       this.welcome = false;
-      console.log("WARNINGS LIST: " + this.warnings);
     },
     search() {
       var self = this;
@@ -225,46 +224,24 @@ export default {
     findRange(date) {
       var dateArray = date.split("-");
       dateArray[0] = parseInt(dateArray[0]) - 5;
-      console.log("RANGE DATE: " + dateArray.join());
       return dateArray.join().replace(/[^a-z0-9]/gi, "");
     },
-    // add() {
-    //   if (this.date == "") {
-    //     alert("Please select a dinner date before adding orders.");
-    //   } else {
-    //     console.log("adding ingredient: " + this.ingredient);
-    //     this.ingredients.push({
-    //       id: this.nextIngredient++,
-    //       title:
-    //         this.ingredient.charAt(0).toUpperCase() + this.ingredient.slice(1),
-    //       img: this.imageLink(this.ingredient),
-    //     });
-    //     console.log("ingredients: " + this.ingredients[0].title);
-    //     this.search();
-    //     this.ingredient = "";
-    //   }
-    // },
     add() {
-      var self = this
+      var self = this;
       var request = require("request");
       var options = {
         method: "GET",
         url:
           "https://api.tenor.com/v1/search?q=" +
           self.ingredient +
-          "&key=LIVDSRZULELA&limit=1&contentfilter=high&media_filter=minimal&ar_range=standard",
-        headers: {
-          "Content-Type": "application/json",
-        },
+          "&key=LIVDSRZULELA&limit=1&contentfilter=high&media_filter=minimal&ar_range=standard"
       };
       request(options, function(error, response) {
         if (error) throw new Error(error);
-        console.log("URL: " + JSON.parse(response.body).results[0].url);
 
         if (self.date == "") {
           alert("Please select a dinner date before adding orders.");
         } else {
-          console.log("adding ingredient: " + self.ingredient);
           self.ingredients.push({
             id: self.nextIngredient++,
             title:
@@ -272,7 +249,6 @@ export default {
               self.ingredient.slice(1),
             img: JSON.parse(response.body).results[0].media[0].gif.url,
           });
-          console.log("ingredients: " + self.ingredients[0].title);
           self.search();
           self.ingredient = "";
         }
